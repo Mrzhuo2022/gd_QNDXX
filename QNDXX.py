@@ -7,11 +7,27 @@ import random
 
 
 class Start:
+    # 登录青年大学习
+    url0 = "https://youthstudy.12355.net/saomah5/api/user/get"
     # 最新一期青年大学习
     url1 = "https://youthstudy.12355.net/saomah5/api/young/chapter/new"
+    # 课程记录
+    url3 = "https://youthstudy.12355.net/saomah5/api/young/course/chapter/saveHistory"
     # 大学习事件
     url2 = "https://gqti.zzdtec.com/api/event"
 
+    headers0 = {
+        "Host": "youthstudy.12355.net",
+        "Origin": "https://youthstudy.12355.net",
+        "X-Litemall-Token": "", # 青年大学习token
+        "X-Litemall-IdentiFication": "young",
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63080021)",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "*/*",
+        "Referer": "https://youthstudy.12355.net/h5/",
+        "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Accept-Encoding": "gzip, deflate"
+    }
     headers1 = {
         "Host": "youthstudy.12355.net",
         "X-Litemall-Token": "", # 青年大学习token
@@ -54,10 +70,18 @@ class Start:
         self.d = "cyol.com"
         self.w = 448
         self.m = ""
+        self.sign = "" # 个人sign
 
     def start(self):
+        data0 = self.sign
+        r0 = requests.post(url=self.url0, headers=self.headers0, data=data0, stream=True, verify=False)
         # 获取最新一期青年大学习地址
         r1 = requests.get(url=self.url1, headers=self.headers1, stream=True, verify=False)
+        chapterid = json.loads(r1.text)["data"]["entity"]["id"]
+        data1 = "chapterId = %s" % chapterid
+        # saveHistory
+        r3 = requests.post(url=self.url3, headers=self.headers0, data=data1, stream=True, verify=False)
+        
         b1 = BeautifulSoup(r1.content, "lxml")
         self.ur = re.search("daxuexi/([a-zA-Z0-9]+)/index.html", str(b1)).group(0)[8:-11]
         self.u = "https://h5.cyol.com/special/daxuexi/%s/m.html?t=1" % self.ur
