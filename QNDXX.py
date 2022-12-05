@@ -75,6 +75,9 @@ class Start:
     def start(self):
         data0 = self.sign
         r0 = requests.post(url=self.url0, headers=self.headers0, data=data0, stream=True, verify=False)
+        token = json.loads(r0.text)["data"]["entity"]["token"]
+        self.headers0["X-Litemall-Token"] = str(token)
+        self.headers1["X-Litemall-Token"] = str(token)
         # 获取最新一期青年大学习地址
         r1 = requests.get(url=self.url1, headers=self.headers1, stream=True, verify=False)
         chapterid = json.loads(r1.text)["data"]["entity"]["id"]
